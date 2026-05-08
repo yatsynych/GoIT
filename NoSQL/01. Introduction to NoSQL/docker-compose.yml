@@ -1,0 +1,30 @@
+# Docker Compose file to set up a MongoDB replica set with three nodes
+version: '3.8'
+
+# Define the services for the MongoDB replica set
+services:
+  # MongoDB primary node
+  mongo1:
+    # Use the official MongoDB image from Docker Hub
+    image: mongo:7.0
+    # Name the container for easier reference
+    container_name: mongo1
+    # Restart the container automatically unless it is explicitly stopped
+    ports:
+      - "27017:27017"
+    # Command to start MongoDB with replica set configuration
+    command: mongod --replSet rs0 --bind_ip_all
+  # MongoDB secondary node 1
+  mongo2:
+    image: mongo:7.0
+    container_name: mongo2
+    ports:
+      - "27018:27017"
+    command: mongod --replSet rs0 --bind_ip_all
+  # MongoDB secondary node 2
+  mongo3:
+    image: mongo:7.0
+    container_name: mongo3
+    ports:
+      - "27019:27017"
+    command: mongod --replSet rs0 --bind_ip_all

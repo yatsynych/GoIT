@@ -1,0 +1,70 @@
+# Docker Compose configuration for MongoDB development environment
+version: '3.8'
+
+services:
+  mongodb:
+    # Use the official MongoDB image from Docker Hub
+    image: mongo:7.0
+    # Name the container for easier reference
+    container_name: mongodb
+    # Restart the container automatically unless it is explicitly stopped
+    restart: unless-stopped
+    # Map the default MongoDB port to the host machine
+    ports:
+      - "27017:27017"
+    # Set environment variables for MongoDB initialization
+    environment:
+      # Set environment variables for MongoDB initialization
+      MONGO_INITDB_ROOT_USERNAME: admin
+      # Set environment variables for MongoDB initialization
+      MONGO_INITDB_ROOT_PASSWORD: secretpassword
+      # Set environment variables for MongoDB initialization
+      MONGO_INITDB_DATABASE: appdb
+    # Define volumes to persist MongoDB data and configuration
+    volumes:
+      # Define volumes to persist MongoDB data and configuration
+      - mongodb_data:/data/db
+      # Define volumes to persist MongoDB data and configuration
+      - mongodb_config:/data/configdb
+      # Optionally, you can add initialization scripts to set up users, databases, or collections
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    # Connect the MongoDB service to the custom network
+    networks:
+      - mongodb_network
+
+  # Optionally: Mongo Express for web interface
+  mongo-express:
+    # Image for Mongo Express, a web-based MongoDB admin interface
+    image: mongo-express:latest
+    # Container name for Mongo Express
+    container_name: mongo_express
+    # Restart the container automatically unless it is explicitly stopped
+    restart: unless-stopped
+    # Map the default Mongo Express port to the host machine
+    ports:
+      - "8081:8081"
+    # Environment variables for Mongo Express to connect to MongoDB
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://admin:secretpassword@mongodb:27017/?authSource=admin
+    # Connect Mongo Express to the same custom network as MongoDB
+    depends_on:
+      # Ensure Mongo Express starts after MongoDB
+      - mongodb
+    # Connect Mongo Express to the same custom network as MongoDB
+    networks:
+      - mongodb_network
+
+# Define volumes for MongoDB data and configuration
+volumes:
+  # Define volumes for MongoDB data and configuration
+  mongodb_data:
+    driver: local
+  # Define volumes for MongoDB data and configuration
+  mongodb_config:
+    driver: local
+
+# Optional: Define a custom network for the MongoDB services
+networks:
+  mongodb_network:
+    # Optional: Use the default bridge network or define a custom network
+    driver: bridge
