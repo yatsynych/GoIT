@@ -51,3 +51,22 @@ db.products.countDocuments({ inStock: true });
 
 # 4.4. Pretty print documents
 db.products.find().pretty();
+
+
+
+# Sample queries for practice
+ cont > 18
+
+ { cont : { $gt: 18 } }
+ {arrayMy: { $nin: [18, "male"] } }
+
+
+# Sample document with geospatial data
+
+{
+  "name": "Lviv Coffee Shop",
+  "location": {
+    "type": "Point",
+    "coordinates": [24.03, 49.84] // [довгота, широта]
+  }
+}
