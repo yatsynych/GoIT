@@ -1,0 +1,31 @@
+services:
+  hbase:
+    image: harisekhon/hbase:latest
+    container_name: hbase
+    hostname: hbase
+    ports:
+      - "9090:9090"
+      - "16000:16000"
+      - "16010:16010"
+      - "16020:16020"
+      - "16030:16030"
+      - "2181:2181"
+    environment:
+      - HBASE_CONF_hbase_cluster_distributed=false
+    volumes:
+      - hbase_data:/hbase-data
+    restart: unless-stopped
+
+  python_app:
+    build: .
+    container_name: python_hbase_client
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      - hbase
+    tty: true
+    stdin_open: true
+
+volumes:
+  hbase_data:
