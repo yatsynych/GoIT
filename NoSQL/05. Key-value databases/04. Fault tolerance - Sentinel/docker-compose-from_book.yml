@@ -1,0 +1,120 @@
+services:
+  redis-master:
+    image: bitnami/redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_ANNOUNCE_IP=redis-master
+    command: >
+      sh -c "
+      redis-server &
+      tail -f /dev/null
+      "
+    ports:
+      - 6379:6379
+    networks:
+      - redis-net
+
+  redis-replica-1:
+    image: bitnami/redis:latest
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis-master
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_ANNOUNCE_IP=redis-replica-1
+    ports:
+      - 6380:6379
+    depends_on:
+      - redis-master
+    networks:
+      - redis-net
+
+  redis-replica-2:
+    image: bitnami/redis:latest
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis-master
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_ANNOUNCE_IP=redis-replica-2
+    ports:
+      - 6381:6379
+    depends_on:
+      - redis-master
+    networks:
+      - redis-net
+
+  sentinel-1:
+    image: bitnami/redis-sentinel:latest
+    ports:
+      - 26379:26379
+    environment:
+      - REDIS_MASTER_SET=mymaster
+      - REDIS_MASTER_HOST=redis-master
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - REDIS_SENTINEL_QUORUM=2
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=5000
+      - REDIS_SENTINEL_FAILOVER_TIMEOUT=30000
+    depends_on:
+      - redis-master
+      - redis-replica-1
+      - redis-replica-2
+    networks:
+      - redis-net
+
+  sentinel-2:
+    image: bitnami/redis-sentinel:latest
+    ports:
+      - 26380:26379
+    environment:
+      - REDIS_MASTER_SET=mymaster
+      - REDIS_MASTER_HOST=redis-master
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - REDIS_SENTINEL_QUORUM=2
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=5000
+      - REDIS_SENTINEL_FAILOVER_TIMEOUT=30000
+    depends_on:
+      - redis-master
+      - redis-replica-1
+      - redis-replica-2
+    networks:
+      - redis-net
+
+  sentinel-3:
+    image: bitnami/redis-sentinel:latest
+    ports:
+      - 26381:26379
+    environment:
+      - REDIS_MASTER_SET=mymaster
+      - REDIS_MASTER_HOST=redis-master
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - REDIS_SENTINEL_QUORUM=2
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=5000
+      - REDIS_SENTINEL_FAILOVER_TIMEOUT=30000
+    depends_on:
+      - redis-master
+      - redis-replica-1
+      - redis-replica-2
+    networks:
+      - redis-net
+
+  python_app:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      - redis-master
+      - redis-replica-1
+      - redis-replica-2
+      - sentinel-1
+      - sentinel-2
+      - sentinel-3
+    tty: true
+    stdin_open: true
+    networks:
+      - redis-net
+
+networks:
+  redis-net:
+    driver: bridge
