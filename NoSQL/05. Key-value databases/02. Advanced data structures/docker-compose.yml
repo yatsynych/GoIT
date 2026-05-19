@@ -1,0 +1,25 @@
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --save 60 1 --loglevel warning
+    restart: unless-stopped
+
+  python_app:
+    build: .
+    container_name: python_redis_client
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      - redis
+    tty: true
+    stdin_open: true
+
+volumes:
+  redis_data:
