@@ -1,0 +1,11 @@
+id,title,text,topic,year,lang
+art-001,Attention Is All You Need,"The transformer architecture uses self-attention to process sequences in parallel.",ml,2017,en
+art-002,BERT for NLP Tasks,"BERT pre-trains bidirectional representations from unlabeled text for fine-tuning.",nlp,2018,en
+art-003,Convolutional Neural Networks,"CNNs use convolutional filters to extract spatial features from images.",cv,2018,en
+art-004,Graph Neural Networks,"GNNs propagate information through graph structures for relational reasoning.",ml,2019,en
+art-005,GPT and Language Generation,"GPT models generate coherent text autoregressively using transformer decoders.",nlp,2019,en
+art-006,Contrastive Learning,"SimCLR learns visual representations by contrasting positive and negative pairs.",cv,2020,en
+art-007,Vector Databases Overview,"Vector databases store embeddings and enable approximate nearest neighbor search.",db,2022,en
+art-008,RAG Architecture,"Retrieval-Augmented Generation combines dense retrieval with language model generation.",nlp,2023,en
+art-009,Diffusion Models,"Diffusion models learn to reverse a noising process for image generation.",cv,2021,en
+art-010,HNSW Index Structure,"HNSW builds a hierarchical graph for fast approximate nearest neighbor search.",db,2021,en

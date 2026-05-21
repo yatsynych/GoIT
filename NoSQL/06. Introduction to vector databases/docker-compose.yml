@@ -1,0 +1,36 @@
+services:
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: chroma_vector_client_server
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/data
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant_vector_client_server
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-storage:/qdrant/storage
+    restart: unless-stopped
+
+  python_app:
+    build: .
+    container_name: python_vector_client
+    volumes:
+      - .:/app
+      - model_cache:/root/.cache/torch/sentence_transformers
+    tty: true
+    stdin_open: true
+    depends_on:
+      - qdrant
+      - chroma
+
+volumes:
+  model_cache:
+  chroma_data:
+  qdrant-storage:
