@@ -1,0 +1,26 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant_server
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-storage:/qdrant/storage
+    restart: unless-stopped
+
+  python_app:
+    build: .
+    container_name: python_vector_client
+    volumes:
+      - .:/app
+      - model_cache:/root/.cache/torch/sentence_transformers
+    working_dir: /app
+    depends_on:
+      - qdrant
+    tty: true
+    stdin_open: true
+
+volumes:
+  qdrant-storage:
+  model_cache:
